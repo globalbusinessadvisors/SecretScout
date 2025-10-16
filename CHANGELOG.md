@@ -5,6 +5,41 @@ All notable changes to SecretScout will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2025-10-16
+
+### Added
+
+#### CLI Functionality (NEW)
+- **General-purpose CLI tool** - Use SecretScout standalone like gitleaks
+- **Dual-mode architecture** - Automatically detects CLI vs GitHub Actions mode
+- **CLI commands**: `detect`, `protect`, `version`
+- **Pre-commit hook support** - Use `secretscout protect --staged` in git hooks
+- **Multiple output formats** - SARIF, JSON, CSV, text
+- **Flexible scanning** - Scan any git repository, not just GitHub Actions context
+- **Direct gitleaks integration** - No GitHub Actions environment required
+- **Zero breaking changes** - Existing GitHub Actions workflows work unchanged
+
+#### CLI Examples
+```bash
+# Scan repository for secrets
+secretscout detect --source /path/to/repo
+
+# Pre-commit hook
+secretscout protect --staged
+
+# Custom config and output
+secretscout detect --config .gitleaks.toml --report-format json
+
+# Check version
+secretscout version
+```
+
+#### Documentation
+- Comprehensive CLI usage guide (docs/CLI_USAGE.md)
+- Technical architecture details (docs/CLI_TRANSFORMATION.md)
+- Quick reference guide (docs/CLI_QUICK_REFERENCE.md)
+- Updated README with CLI installation and usage examples
+
 ## [3.0.0] - 2025-10-16
 
 ### Added
