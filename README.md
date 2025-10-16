@@ -5,13 +5,13 @@
 [![Version](https://img.shields.io/badge/version-3.0.0-green.svg)](CHANGELOG.md)
 [![Rust](https://img.shields.io/badge/rust-1.90+-orange.svg)](https://www.rust-lang.org)
 
-A blazingly fast, memory-safe GitHub Action for detecting secrets, passwords, API keys, and tokens in git repositories. SecretScout is a complete Rust rewrite of gitleaks-action, delivering **10x faster performance** with **60% less memory usage**.
+A blazingly fast, memory-safe **CLI tool and GitHub Action** for detecting secrets, passwords, API keys, and tokens in git repositories. SecretScout is a complete Rust rewrite of gitleaks-action, delivering **10x faster performance** with **60% less memory usage**.
 
 ## ✨ Features
 
 - **🚀 10x Faster**: Rust-powered performance with intelligent caching
 - **🔒 Memory Safe**: Zero buffer overflows, crashes, or memory leaks
-- **🎯 100% Compatible**: Drop-in replacement for gitleaks-action v2
+- **🎯 Dual Mode**: Use as standalone CLI tool or GitHub Action
 - **📊 Rich Outputs**: SARIF reports, PR comments, job summaries
 - **🔄 Automatic Retry**: Smart retry logic with exponential backoff
 - **🌐 Multi-Platform**: Linux, macOS, Windows, and WASM support
@@ -20,7 +20,51 @@ A blazingly fast, memory-safe GitHub Action for detecting secrets, passwords, AP
 
 ## 🚀 Quick Start
 
-### Basic Usage
+SecretScout can be used in two ways:
+1. **As a standalone CLI tool** (like gitleaks)
+2. **As a GitHub Action** (automated CI/CD scanning)
+
+### CLI Installation
+
+Install SecretScout as a standalone command-line tool:
+
+```bash
+# Install from source
+cargo install --path secretscout
+
+# Or build locally
+git clone https://github.com/globalbusinessadvisors/SecretScout.git
+cd SecretScout
+cargo build --release
+# Binary will be at target/release/secretscout
+```
+
+### CLI Usage
+
+```bash
+# Detect secrets in current directory
+secretscout detect
+
+# Scan specific repository
+secretscout detect --source /path/to/repo
+
+# Protect staged changes (pre-commit hook)
+secretscout protect --staged
+
+# Custom config file
+secretscout detect --config .gitleaks.toml
+
+# Different output format
+secretscout detect --report-format json --report-path findings.json
+
+# Verbose output
+secretscout detect --verbose
+
+# Show version
+secretscout version
+```
+
+### GitHub Action Usage
 
 ```yaml
 name: Secret Scan
@@ -81,7 +125,113 @@ jobs:
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 ```
 
-## 📖 Inputs
+## 💻 CLI Commands
+
+SecretScout provides a full-featured CLI that works like gitleaks:
+
+### `secretscout detect`
+
+Scan a repository for secrets:
+
+```bash
+secretscout detect [OPTIONS]
+
+Options:
+  -s, --source <PATH>           Path to git repository [default: .]
+  -r, --report-path <PATH>      Path to write SARIF report [default: results.sarif]
+  -f, --report-format <FORMAT>  Report format (sarif, json, csv, text) [default: sarif]
+  --redact                      Redact secrets in output [default: true]
+  --exit-code <CODE>            Exit code when leaks detected [default: 2]
+  --log-opts <OPTS>             Git log options (e.g., "--all", "main..dev")
+  -c, --config <PATH>           Path to gitleaks config file
+  -v, --verbose                 Enable verbose logging
+  -h, --help                    Print help
+```
+
+**Examples:**
+
+```bash
+# Basic scan
+secretscout detect
+
+# Scan specific directory
+secretscout detect --source /path/to/repo
+
+# Scan with custom config
+secretscout detect --config custom.toml
+
+# JSON output with verbose logging
+secretscout detect -f json -r report.json --verbose
+
+# Scan specific git range
+secretscout detect --log-opts "main..feature-branch"
+
+# Full repository scan (all commits)
+secretscout detect --log-opts "--all"
+```
+
+### `secretscout protect`
+
+Scan staged changes (perfect for pre-commit hooks):
+
+```bash
+secretscout protect [OPTIONS]
+
+Options:
+  -s, --source <PATH>     Path to git repository [default: .]
+  --staged                Scan staged changes only [default: true]
+  -c, --config <PATH>     Path to gitleaks config file
+  -v, --verbose           Enable verbose logging
+  -h, --help              Print help
+```
+
+**Examples:**
+
+```bash
+# Scan staged changes
+secretscout protect --staged
+
+# Scan with custom config
+secretscout protect --config .gitleaks.toml
+
+# Verbose output
+secretscout protect --verbose
+```
+
+### `secretscout version`
+
+Print version information:
+
+```bash
+secretscout version
+```
+
+### Pre-commit Hook Setup
+
+Add SecretScout as a pre-commit hook:
+
+```bash
+# .git/hooks/pre-commit
+#!/bin/bash
+secretscout protect --staged
+exit $?
+```
+
+Or use with [pre-commit framework](https://pre-commit.com/):
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      - id: secretscout
+        name: SecretScout
+        entry: secretscout protect --staged
+        language: system
+        pass_filenames: false
+```
+
+## 📖 GitHub Action Inputs
 
 | Input | Description | Required | Default |
 |-------|-------------|----------|---------|
@@ -302,8 +452,20 @@ cargo build --release --target wasm32-unknown-unknown --features wasm
 
 ### Running Locally
 
+SecretScout automatically detects whether to run in CLI or GitHub Actions mode:
+
+**CLI Mode (default):**
 ```bash
-# Set required environment variables
+# Just run it - no environment variables needed
+./target/release/secretscout detect --source .
+./target/release/secretscout protect --staged
+./target/release/secretscout version
+```
+
+**GitHub Actions Mode (requires env vars):**
+```bash
+# Set required GitHub Actions environment variables
+export GITHUB_ACTIONS=true
 export GITHUB_WORKSPACE=/path/to/repo
 export GITHUB_EVENT_PATH=/path/to/event.json
 export GITHUB_EVENT_NAME=push
@@ -311,9 +473,11 @@ export GITHUB_REPOSITORY=owner/repo
 export GITHUB_REPOSITORY_OWNER=owner
 export GITHUB_TOKEN=your-token
 
-# Run
+# Run in GitHub Actions mode
 ./target/release/secretscout
 ```
+
+The binary automatically switches between modes based on environment detection.
 
 ## 🔧 Troubleshooting
 
@@ -402,10 +566,40 @@ cargo clippy --all-features -- -D warnings
 - Code coverage: ~85%
 - All platforms: Linux, macOS, Windows
 
+## 🔄 Dual-Mode Architecture
+
+SecretScout intelligently detects its operating mode:
+
+### Mode Detection
+
+```rust
+if GITHUB_ACTIONS=true && GITHUB_WORKSPACE && GITHUB_EVENT_PATH {
+    // GitHub Actions mode
+    // - Parse event context
+    // - Post PR comments
+    // - Generate job summaries
+    // - Upload artifacts
+} else {
+    // CLI mode
+    // - Parse command-line arguments
+    // - Run gitleaks commands
+    // - Output results to console
+}
+```
+
+### Benefits
+
+- **Single Binary**: One executable for both use cases
+- **Zero Breaking Changes**: Existing GitHub Actions workflows continue working
+- **Flexible Usage**: Use as pre-commit hook, in CI/CD, or locally
+- **Automatic Detection**: No manual mode selection required
+
 ## 🆚 Comparison
 
 | Feature | v2 (JS) | v3 (Rust) |
 |---------|---------|-----------|
+| **CLI tool** | ❌ | ✅ |
+| **GitHub Action** | ✅ | ✅ |
 | Performance | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
 | Memory usage | 512 MB | 200 MB |
 | Binary size | - | 8 MB |

@@ -1,33 +1,58 @@
-//! SecretScout - Rust/WASM library
+//! SecretScout - Fast, memory-safe secret detection
 //!
 //! This is the library entry point that exposes modules for both native
-//! and WASM targets.
+//! and WASM targets, as well as CLI and GitHub Actions functionality.
 
 #![warn(missing_docs)]
 #![warn(clippy::all)]
 
-// Core modules (available in both native and WASM)
-pub mod config;
+// Core modules (available in all modes)
 pub mod error;
-pub mod events;
-pub mod sarif;
-pub mod outputs;
 
 // Native-only modules
 #[cfg(feature = "native")]
 pub mod binary;
 
 #[cfg(feature = "native")]
+pub mod config;
+
+#[cfg(feature = "native")]
+pub mod events;
+
+#[cfg(feature = "native")]
+pub mod sarif;
+
+#[cfg(feature = "native")]
+pub mod outputs;
+
+#[cfg(feature = "native")]
 pub mod github;
+
+// CLI-specific modules
+#[cfg(feature = "native")]
+pub mod cli;
+
+#[cfg(feature = "native")]
+pub mod commands;
+
+// GitHub Actions-specific modules
+#[cfg(feature = "native")]
+pub mod github_actions;
 
 // WASM-specific exports
 #[cfg(feature = "wasm")]
 pub mod wasm;
 
 // Re-exports for convenience
+#[cfg(feature = "native")]
 pub use config::Config;
+
 pub use error::{Error, Result};
+
+#[cfg(feature = "native")]
 pub use events::{EventContext, EventType};
+
+#[cfg(feature = "native")]
 pub use sarif::types::DetectedSecret;
 
 /// Library version
