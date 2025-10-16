@@ -1,6 +1,6 @@
 # SecretScout 🛡️
 
-[![CI](https://github.com/gitleaks/gitleaks-action/workflows/CI/badge.svg)](https://github.com/gitleaks/gitleaks-action/actions)
+[![CI](https://github.com/globalbusinessadvisors/SecretScout/workflows/CI/badge.svg)](https://github.com/globalbusinessadvisors/SecretScout/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-3.0.0-green.svg)](CHANGELOG.md)
 [![Rust](https://img.shields.io/badge/rust-1.90+-orange.svg)](https://www.rust-lang.org)
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: gitleaks/gitleaks-action@v3
+      - uses: globalbusinessadvisors/SecretScout@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -68,7 +68,7 @@ jobs:
           fetch-depth: 0  # Full history for complete scanning
 
       - name: Run SecretScout
-        uses: gitleaks/gitleaks-action@v3
+        uses: globalbusinessadvisors/SecretScout@v3
         with:
           config: .github/.gitleaks.toml
           version: 8.24.3
@@ -370,8 +370,8 @@ Contributions are welcome! Please:
 
 ```bash
 # Clone the repository
-git clone https://github.com/gitleaks/gitleaks-action.git
-cd gitleaks-action
+git clone https://github.com/globalbusinessadvisors/SecretScout.git
+cd SecretScout
 
 # Install dependencies
 rustup toolchain install stable
@@ -427,8 +427,8 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## 📧 Support
 
-- **Issues**: [GitHub Issues](https://github.com/gitleaks/gitleaks-action/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/gitleaks/gitleaks-action/discussions)
+- **Issues**: [GitHub Issues](https://github.com/globalbusinessadvisors/SecretScout/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/globalbusinessadvisors/SecretScout/discussions)
 - **Documentation**: [Full Docs](docs/)
 - **Gitleaks**: [gitleaks.io](https://gitleaks.io)
 
