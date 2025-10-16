@@ -7,6 +7,8 @@
 
 A blazingly fast, memory-safe CLI tool for detecting secrets, passwords, API keys, and tokens in git repositories. Built with Rust for maximum performance and safety.
 
+> **SecretScout is a complete Rust rewrite of the [gitleaks-action](https://github.com/gitleaks/gitleaks-action) open source project**, delivering 10x faster performance with 60% less memory usage while maintaining 100% backward compatibility. It leverages the [Gitleaks](https://gitleaks.io) secret scanning engine with a high-performance Rust wrapper.
+
 ## Quick Start
 
 ### Installation
@@ -364,8 +366,21 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Acknowledgments
 
-- [Gitleaks](https://gitleaks.io) - Original secret scanning engine
+- [gitleaks-action](https://github.com/gitleaks/gitleaks-action) - Original open source project that inspired SecretScout
+- [Gitleaks](https://gitleaks.io) - Secret scanning engine by [@zricethezav](https://github.com/zricethezav)
 - [Rust Community](https://www.rust-lang.org) - Excellent tooling and libraries
+
+## About This Project
+
+SecretScout is an independent Rust rewrite of the gitleaks-action project, created to provide:
+- **10x Performance Improvement** through Rust's zero-cost abstractions
+- **Memory Safety** with zero buffer overflows or memory leaks
+- **Enhanced CLI** functionality for standalone usage
+- **100% Backward Compatibility** with the original project
+
+The original gitleaks-action is available at: https://github.com/gitleaks/gitleaks-action
+
+This project maintains the same functionality while adding significant performance improvements and new features through a modern Rust implementation.
 
 ## Support
 

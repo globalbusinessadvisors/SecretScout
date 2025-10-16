@@ -74,7 +74,7 @@ runs:
 - **Implicit Output:** `exit-code` (set via `core.setOutput("exit-code", exitCode)`)
   - Type: Number
   - Values: 0 (no leaks), 1 (error), 2 (leaks detected)
-  - Set in: `/workspaces/SecretScout/gitleaks-action/src/gitleaks.js:124`
+  - Set in: `/workspaces/SecretScout/original-reference/src/gitleaks.js:124`
 
 **Runtime Requirements:**
 - Node.js 20 runtime
@@ -1102,7 +1102,7 @@ runs:
 ## File Structure Summary
 
 ```
-gitleaks-action/
+original-reference/
 ├── action.yml                 # Action metadata (minimal)
 ├── package.json               # Node.js dependencies
 ├── package-lock.json          # Dependency lock file
