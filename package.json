@@ -1,5 +1,32 @@
 {
+  "name": "secretscout",
+  "version": "3.0.0",
+  "description": "Rust-powered secret detection for GitHub Actions",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "cargo build --release --features native",
+    "test": "cargo test --all-features",
+    "lint": "cargo clippy -- -D warnings",
+    "format": "cargo fmt --all -- --check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gitleaks/gitleaks-action.git"
+  },
+  "keywords": [
+    "gitleaks",
+    "secrets",
+    "security",
+    "github-actions",
+    "rust",
+    "secret-scanning"
+  ],
+  "author": "Gitleaks Contributors",
+  "license": "MIT",
   "dependencies": {
-    "claude-flow": "^2.0.0"
+    "@actions/core": "^1.10.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

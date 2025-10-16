@@ -1,0 +1,62 @@
+[workspace]
+members = ["secretscout"]
+resolver = "2"
+
+[workspace.package]
+version = "3.0.0"
+edition = "2021"
+authors = ["Gitleaks Contributors"]
+license = "MIT"
+repository = "https://github.com/gitleaks/gitleaks-action"
+homepage = "https://gitleaks.io"
+
+[workspace.dependencies]
+# Core dependencies
+serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+thiserror = "1.0"
+
+# Async runtime (native only)
+tokio = { version = "1.35", features = ["rt-multi-thread", "process", "fs", "io-util", "macros"] }
+
+# HTTP client
+reqwest = { version = "0.11", default-features = false }
+
+# GitHub API
+octocrab = "0.34"
+
+# Logging
+log = "0.4"
+env_logger = "0.11"
+
+# WASM-specific
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+web-sys = "0.3"
+console_error_panic_hook = "0.1"
+serde-wasm-bindgen = "0.6"
+
+# CLI parsing
+clap = { version = "4.4", features = ["derive"] }
+
+# Compression
+flate2 = "1.0"
+tar = "0.4"
+zip = "0.6"
+
+# Path utilities
+path-absolutize = "3.1"
+
+# Caching
+dirs = "5.0"
+
+[profile.release]
+opt-level = 'z'     # Optimize for size
+lto = true          # Link-time optimization
+codegen-units = 1   # Single codegen unit for better optimization
+strip = true        # Strip debug symbols
+panic = 'abort'     # Smaller panic handler
+
+[profile.release.package."*"]
+opt-level = 'z'

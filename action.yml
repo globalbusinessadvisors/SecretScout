@@ -1,0 +1,52 @@
+name: 'SecretScout'
+description: 'Rust-powered secret detection for GitHub Actions - Fast, secure, and reliable fork of gitleaks-action'
+author: 'Gitleaks Contributors'
+
+branding:
+  icon: 'shield'
+  color: 'red'
+
+inputs:
+  config:
+    description: 'Path to gitleaks configuration file (relative to repository root)'
+    required: false
+    default: ''
+
+  version:
+    description: 'Gitleaks version to use'
+    required: false
+    default: '8.24.3'
+
+  license:
+    description: 'Gitleaks Pro license key (for enhanced features)'
+    required: false
+    default: ''
+
+  enable-summary:
+    description: 'Enable GitHub Actions job summary'
+    required: false
+    default: 'true'
+
+  enable-upload-artifact:
+    description: 'Enable SARIF artifact upload'
+    required: false
+    default: 'true'
+
+  enable-comments:
+    description: 'Enable PR review comments (PR events only)'
+    required: false
+    default: 'true'
+
+  notify-user-list:
+    description: 'Comma-separated list of GitHub users to notify (e.g., "@user1, @user2")'
+    required: false
+    default: ''
+
+  base-ref:
+    description: 'Base reference for comparison (overrides event default)'
+    required: false
+    default: ''
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
