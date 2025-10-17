@@ -22,16 +22,24 @@ pub async fn post_pr_comments(
         }
     };
 
-    log::info!("Posting comments for {} findings on PR #{}", findings.len(), pr.number);
+    log::info!(
+        "Posting comments for {} findings on PR #{}",
+        findings.len(),
+        pr.number
+    );
 
     // Fetch existing comments for deduplication
-    let existing_comments = match github::fetch_pr_comments(config, &context.repository, pr.number).await {
-        Ok(comments) => comments,
-        Err(e) => {
-            log::warn!("Failed to fetch existing comments: {}. Continuing without deduplication.", e);
-            Vec::new()
-        }
-    };
+    let existing_comments =
+        match github::fetch_pr_comments(config, &context.repository, pr.number).await {
+            Ok(comments) => comments,
+            Err(e) => {
+                log::warn!(
+                    "Failed to fetch existing comments: {}. Continuing without deduplication.",
+                    e
+                );
+                Vec::new()
+            }
+        };
 
     let mut posted = 0;
     let mut skipped = 0;
@@ -71,7 +79,11 @@ pub async fn post_pr_comments(
         // Post comment (non-fatal errors)
         match github::post_pr_comment(config, &context.repository, pr.number, &comment).await {
             Ok(_) => {
-                log::debug!("Posted comment on {}:{}", finding.file_path, finding.line_number);
+                log::debug!(
+                    "Posted comment on {}:{}",
+                    finding.file_path,
+                    finding.line_number
+                );
                 posted += 1;
             }
             Err(e) => {
@@ -86,15 +98,17 @@ pub async fn post_pr_comments(
         }
     }
 
-    log::info!("Posted {} PR comments, skipped {} duplicates", posted, skipped);
+    log::info!(
+        "Posted {} PR comments, skipped {} duplicates",
+        posted,
+        skipped
+    );
 
     Ok(posted)
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     // Mock tests would go here - they require complex setup with API mocking
     // For now, the integration will be tested at a higher level
 }

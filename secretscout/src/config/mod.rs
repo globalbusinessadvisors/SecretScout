@@ -75,20 +75,26 @@ impl Config {
 
         // Check if token is required based on event type
         if event_name == "pull_request" && github_token.is_empty() {
-            return Err(ConfigError::MissingEnvVar("GITHUB_TOKEN is required for pull_request events".into()).into());
+            return Err(ConfigError::MissingEnvVar(
+                "GITHUB_TOKEN is required for pull_request events".into(),
+            )
+            .into());
         }
 
         // Optional gitleaks configuration
         let gitleaks_license = env::var("GITLEAKS_LICENSE").ok();
-        let gitleaks_version = env::var("GITLEAKS_VERSION").unwrap_or_else(|_| "8.24.3".to_string());
+        let gitleaks_version =
+            env::var("GITLEAKS_VERSION").unwrap_or_else(|_| "8.24.3".to_string());
 
         // Feature toggles with backward-compatible boolean parsing
         let enable_summary = Self::parse_boolean_env("GITLEAKS_ENABLE_SUMMARY", true)?;
-        let enable_upload_artifact = Self::parse_boolean_env("GITLEAKS_ENABLE_UPLOAD_ARTIFACT", true)?;
+        let enable_upload_artifact =
+            Self::parse_boolean_env("GITLEAKS_ENABLE_UPLOAD_ARTIFACT", true)?;
         let enable_comments = Self::parse_boolean_env("GITLEAKS_ENABLE_COMMENTS", true)?;
 
         // User notification list
-        let notify_user_list = Self::parse_user_list(&env::var("GITLEAKS_NOTIFY_USER_LIST").unwrap_or_default());
+        let notify_user_list =
+            Self::parse_user_list(&env::var("GITLEAKS_NOTIFY_USER_LIST").unwrap_or_default());
 
         // Base ref override
         let base_ref = env::var("BASE_REF").ok();
@@ -147,12 +153,10 @@ impl Config {
     /// - Everything else (including empty) -> true
     fn parse_boolean_env(key: &str, default: bool) -> Result<bool> {
         match env::var(key) {
-            Ok(value) => {
-                match value.as_str() {
-                    "false" | "0" => Ok(false),
-                    _ => Ok(true),
-                }
-            }
+            Ok(value) => match value.as_str() {
+                "false" | "0" => Ok(false),
+                _ => Ok(true),
+            },
             Err(_) => Ok(default),
         }
     }
@@ -183,8 +187,9 @@ impl Config {
         }
 
         // Canonicalize to get absolute path
-        path_buf.canonicalize()
-            .map_err(|e| ConfigError::InvalidPath(format!("Failed to canonicalize {}: {}", path, e)).into())
+        path_buf.canonicalize().map_err(|e| {
+            ConfigError::InvalidPath(format!("Failed to canonicalize {}: {}", path, e)).into()
+        })
     }
 
     /// Validate path buffer against workspace
@@ -198,8 +203,9 @@ impl Config {
 
         // Canonicalize if exists, otherwise just validate format
         let canonical = if path_buf.exists() {
-            path_buf.canonicalize()
-                .map_err(|e| ConfigError::InvalidPath(format!("Failed to canonicalize {}: {}", path, e)))?
+            path_buf.canonicalize().map_err(|e| {
+                ConfigError::InvalidPath(format!("Failed to canonicalize {}: {}", path, e))
+            })?
         } else {
             // If file doesn't exist yet (e.g., results.sarif), construct expected path
             if path_buf.is_absolute() {
@@ -226,8 +232,13 @@ impl Config {
 
         // Canonicalize and check if within workspace
         if path.exists() {
-            let canonical = path.canonicalize()
-                .map_err(|e| ConfigError::InvalidPath(format!("Failed to canonicalize {}: {}", path.display(), e)))?;
+            let canonical = path.canonicalize().map_err(|e| {
+                ConfigError::InvalidPath(format!(
+                    "Failed to canonicalize {}: {}",
+                    path.display(),
+                    e
+                ))
+            })?;
 
             if !canonical.starts_with(workspace) {
                 return Err(ConfigError::OutsideWorkspace(path.display().to_string()).into());
@@ -247,17 +258,17 @@ impl Config {
         let dangerous_chars = [';', '&', '|', '$', '`', '\n', '\r', '<', '>'];
         for ch in dangerous_chars {
             if git_ref.contains(ch) {
-                return Err(ConfigError::InvalidGitRef(
-                    format!("Contains dangerous character '{}'", ch)
-                ).into());
+                return Err(ConfigError::InvalidGitRef(format!(
+                    "Contains dangerous character '{}'",
+                    ch
+                ))
+                .into());
             }
         }
 
         // Check for path traversal
         if git_ref.contains("..") {
-            return Err(ConfigError::InvalidGitRef(
-                "Contains path traversal".to_string()
-            ).into());
+            return Err(ConfigError::InvalidGitRef("Contains path traversal".to_string()).into());
         }
 
         Ok(())
@@ -286,23 +297,44 @@ mod tests {
 
     #[test]
     fn test_parse_boolean_env() {
-        assert_eq!(Config::parse_boolean_env("NONEXISTENT", true).unwrap(), true);
-        assert_eq!(Config::parse_boolean_env("NONEXISTENT", false).unwrap(), false);
+        assert_eq!(
+            Config::parse_boolean_env("NONEXISTENT", true).unwrap(),
+            true
+        );
+        assert_eq!(
+            Config::parse_boolean_env("NONEXISTENT", false).unwrap(),
+            false
+        );
 
         env::set_var("TEST_BOOL_FALSE", "false");
-        assert_eq!(Config::parse_boolean_env("TEST_BOOL_FALSE", true).unwrap(), false);
+        assert_eq!(
+            Config::parse_boolean_env("TEST_BOOL_FALSE", true).unwrap(),
+            false
+        );
 
         env::set_var("TEST_BOOL_ZERO", "0");
-        assert_eq!(Config::parse_boolean_env("TEST_BOOL_ZERO", true).unwrap(), false);
+        assert_eq!(
+            Config::parse_boolean_env("TEST_BOOL_ZERO", true).unwrap(),
+            false
+        );
 
         env::set_var("TEST_BOOL_TRUE", "true");
-        assert_eq!(Config::parse_boolean_env("TEST_BOOL_TRUE", false).unwrap(), true);
+        assert_eq!(
+            Config::parse_boolean_env("TEST_BOOL_TRUE", false).unwrap(),
+            true
+        );
 
         env::set_var("TEST_BOOL_ONE", "1");
-        assert_eq!(Config::parse_boolean_env("TEST_BOOL_ONE", false).unwrap(), true);
+        assert_eq!(
+            Config::parse_boolean_env("TEST_BOOL_ONE", false).unwrap(),
+            true
+        );
 
         env::set_var("TEST_BOOL_ANY", "anything");
-        assert_eq!(Config::parse_boolean_env("TEST_BOOL_ANY", false).unwrap(), true);
+        assert_eq!(
+            Config::parse_boolean_env("TEST_BOOL_ANY", false).unwrap(),
+            true
+        );
     }
 
     #[test]

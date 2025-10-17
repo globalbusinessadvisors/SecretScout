@@ -6,7 +6,10 @@ use crate::{binary, config::Config, error::Result, events, outputs, sarif};
 
 /// Run SecretScout in GitHub Actions mode
 pub async fn run(config: &Config) -> Result<i32> {
-    log::info!("SecretScout v{} starting in GitHub Actions mode...", env!("CARGO_PKG_VERSION"));
+    log::info!(
+        "SecretScout v{} starting in GitHub Actions mode...",
+        env!("CARGO_PKG_VERSION")
+    );
 
     // Step 1: Parse event context
     log::info!("Parsing event context...");
@@ -27,12 +30,8 @@ pub async fn run(config: &Config) -> Result<i32> {
 
     // Step 4: Execute gitleaks
     log::info!("Executing gitleaks scan...");
-    let execution_result = binary::execute_gitleaks(
-        &binary_path,
-        &args,
-        &config.workspace_path,
-    )
-    .await?;
+    let execution_result =
+        binary::execute_gitleaks(&binary_path, &args, &config.workspace_path).await?;
 
     // Step 5: Process results based on exit code
     match execution_result.exit_code {
@@ -53,11 +52,13 @@ pub async fn run(config: &Config) -> Result<i32> {
 
             // Parse SARIF report
             log::info!("Parsing SARIF report...");
-            let findings = sarif::parse_and_extract(&config.sarif_path())?;
+            let findings = sarif::parse_and_extract(config.sarif_path())?;
             log::warn!("Found {} secret(s)", findings.len());
 
             // Generate outputs (must complete before exiting)
-            if config.enable_comments && matches!(event_context.event_type, events::EventType::PullRequest) {
+            if config.enable_comments
+                && matches!(event_context.event_type, events::EventType::PullRequest)
+            {
                 log::info!("Posting PR comments...");
                 match outputs::post_pr_comments(config, &event_context, &findings).await {
                     Ok(count) => log::info!("Posted {} comments", count),
@@ -67,12 +68,16 @@ pub async fn run(config: &Config) -> Result<i32> {
 
             if config.enable_summary {
                 log::info!("Generating job summary...");
-                let summary = outputs::generate_findings_summary(&event_context.repository, &findings);
+                let summary =
+                    outputs::generate_findings_summary(&event_context.repository, &findings);
                 outputs::write_summary(&summary)?;
             }
 
             if config.enable_upload_artifact {
-                log::info!("SARIF report ready for artifact upload: {}", config.sarif_path().display());
+                log::info!(
+                    "SARIF report ready for artifact upload: {}",
+                    config.sarif_path().display()
+                );
             }
 
             // Return 1 to fail the workflow when secrets are found

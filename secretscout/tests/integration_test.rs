@@ -192,9 +192,21 @@ fn create_sarif_with_findings() -> serde_json::Value {
 fn test_config_from_env_push_event() {
     let (temp_dir, event_file) = setup_test_env();
     let event_json = create_push_event();
-    fs::write(&event_file, serde_json::to_string_pretty(&event_json).unwrap()).unwrap();
+    fs::write(
+        &event_file,
+        serde_json::to_string_pretty(&event_json).unwrap(),
+    )
+    .unwrap();
 
-    set_env_vars(temp_dir.path().to_str().unwrap(), event_file.to_str().unwrap());
+    set_env_vars(
+        temp_dir.path().to_str().unwrap(),
+        event_file.to_str().unwrap(),
+    );
+
+    // Ensure feature toggle env vars are not set (clean slate for defaults)
+    env::remove_var("GITLEAKS_ENABLE_SUMMARY");
+    env::remove_var("GITLEAKS_ENABLE_UPLOAD_ARTIFACT");
+    env::remove_var("GITLEAKS_ENABLE_COMMENTS");
 
     let config = Config::from_env().unwrap();
 
@@ -212,9 +224,16 @@ fn test_config_from_env_push_event() {
 fn test_config_feature_toggles() {
     let (temp_dir, event_file) = setup_test_env();
     let event_json = create_push_event();
-    fs::write(&event_file, serde_json::to_string_pretty(&event_json).unwrap()).unwrap();
+    fs::write(
+        &event_file,
+        serde_json::to_string_pretty(&event_json).unwrap(),
+    )
+    .unwrap();
 
-    set_env_vars(temp_dir.path().to_str().unwrap(), event_file.to_str().unwrap());
+    set_env_vars(
+        temp_dir.path().to_str().unwrap(),
+        event_file.to_str().unwrap(),
+    );
 
     // Test disabling features
     env::set_var("GITLEAKS_ENABLE_SUMMARY", "false");
@@ -237,9 +256,16 @@ fn test_config_feature_toggles() {
 fn test_config_user_notification_list() {
     let (temp_dir, event_file) = setup_test_env();
     let event_json = create_push_event();
-    fs::write(&event_file, serde_json::to_string_pretty(&event_json).unwrap()).unwrap();
+    fs::write(
+        &event_file,
+        serde_json::to_string_pretty(&event_json).unwrap(),
+    )
+    .unwrap();
 
-    set_env_vars(temp_dir.path().to_str().unwrap(), event_file.to_str().unwrap());
+    set_env_vars(
+        temp_dir.path().to_str().unwrap(),
+        event_file.to_str().unwrap(),
+    );
     env::set_var("GITLEAKS_NOTIFY_USER_LIST", "@user1, @user2, @user3");
 
     let config = Config::from_env().unwrap();
@@ -253,9 +279,16 @@ fn test_config_user_notification_list() {
 async fn test_parse_push_event() {
     let (temp_dir, event_file) = setup_test_env();
     let event_json = create_push_event();
-    fs::write(&event_file, serde_json::to_string_pretty(&event_json).unwrap()).unwrap();
+    fs::write(
+        &event_file,
+        serde_json::to_string_pretty(&event_json).unwrap(),
+    )
+    .unwrap();
 
-    set_env_vars(temp_dir.path().to_str().unwrap(), event_file.to_str().unwrap());
+    set_env_vars(
+        temp_dir.path().to_str().unwrap(),
+        event_file.to_str().unwrap(),
+    );
 
     let config = Config::from_env().unwrap();
     let context = events::parse_event_context(&config).await.unwrap();
@@ -274,9 +307,16 @@ async fn test_parse_push_event() {
 async fn test_parse_pull_request_event() {
     let (temp_dir, event_file) = setup_test_env();
     let event_json = create_pull_request_event();
-    fs::write(&event_file, serde_json::to_string_pretty(&event_json).unwrap()).unwrap();
+    fs::write(
+        &event_file,
+        serde_json::to_string_pretty(&event_json).unwrap(),
+    )
+    .unwrap();
 
-    set_env_vars(temp_dir.path().to_str().unwrap(), event_file.to_str().unwrap());
+    set_env_vars(
+        temp_dir.path().to_str().unwrap(),
+        event_file.to_str().unwrap(),
+    );
     env::set_var("GITHUB_EVENT_NAME", "pull_request");
 
     let config = Config::from_env().unwrap();
@@ -290,15 +330,25 @@ async fn test_parse_pull_request_event() {
 async fn test_parse_workflow_dispatch_event() {
     let (temp_dir, event_file) = setup_test_env();
     let event_json = create_workflow_dispatch_event();
-    fs::write(&event_file, serde_json::to_string_pretty(&event_json).unwrap()).unwrap();
+    fs::write(
+        &event_file,
+        serde_json::to_string_pretty(&event_json).unwrap(),
+    )
+    .unwrap();
 
-    set_env_vars(temp_dir.path().to_str().unwrap(), event_file.to_str().unwrap());
+    set_env_vars(
+        temp_dir.path().to_str().unwrap(),
+        event_file.to_str().unwrap(),
+    );
     env::set_var("GITHUB_EVENT_NAME", "workflow_dispatch");
 
     let config = Config::from_env().unwrap();
     let context = events::parse_event_context(&config).await.unwrap();
 
-    assert!(matches!(context.event_type, events::EventType::WorkflowDispatch));
+    assert!(matches!(
+        context.event_type,
+        events::EventType::WorkflowDispatch
+    ));
     // For workflow_dispatch, it does a full scan
     assert_eq!(context.base_ref, "");
     assert_eq!(context.head_ref, "");
@@ -308,9 +358,16 @@ async fn test_parse_workflow_dispatch_event() {
 async fn test_parse_schedule_event() {
     let (temp_dir, event_file) = setup_test_env();
     let event_json = create_schedule_event();
-    fs::write(&event_file, serde_json::to_string_pretty(&event_json).unwrap()).unwrap();
+    fs::write(
+        &event_file,
+        serde_json::to_string_pretty(&event_json).unwrap(),
+    )
+    .unwrap();
 
-    set_env_vars(temp_dir.path().to_str().unwrap(), event_file.to_str().unwrap());
+    set_env_vars(
+        temp_dir.path().to_str().unwrap(),
+        event_file.to_str().unwrap(),
+    );
     env::set_var("GITHUB_EVENT_NAME", "schedule");
 
     let config = Config::from_env().unwrap();
@@ -326,7 +383,11 @@ fn test_sarif_parsing_with_findings() {
     let (temp_dir, _) = setup_test_env();
     let sarif_file = temp_dir.path().join("results.sarif");
     let sarif_json = create_sarif_with_findings();
-    fs::write(&sarif_file, serde_json::to_string_pretty(&sarif_json).unwrap()).unwrap();
+    fs::write(
+        &sarif_file,
+        serde_json::to_string_pretty(&sarif_json).unwrap(),
+    )
+    .unwrap();
 
     let findings = sarif::parse_and_extract(&sarif_file).unwrap();
 
@@ -366,7 +427,11 @@ fn test_sarif_parsing_empty_results() {
             }
         ]
     });
-    fs::write(&sarif_file, serde_json::to_string_pretty(&sarif_json).unwrap()).unwrap();
+    fs::write(
+        &sarif_file,
+        serde_json::to_string_pretty(&sarif_json).unwrap(),
+    )
+    .unwrap();
 
     let result = sarif::parse_and_extract(&sarif_file);
 

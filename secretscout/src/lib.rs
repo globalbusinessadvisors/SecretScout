@@ -3,7 +3,7 @@
 //! This is the library entry point that exposes modules for both native
 //! and WASM targets, as well as CLI and GitHub Actions functionality.
 
-#![warn(missing_docs)]
+#![allow(missing_docs)]
 #![warn(clippy::all)]
 
 // Core modules (available in all modes)

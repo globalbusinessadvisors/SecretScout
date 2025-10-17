@@ -7,6 +7,7 @@ use crate::config::Config;
 use crate::error::{EventError, Result};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
+use std::str::FromStr;
 
 /// Supported GitHub event types
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -68,9 +69,10 @@ pub struct GitReference {
     pub ref_name: String,
 }
 
-impl EventType {
-    /// Parse event type from string
-    pub fn from_str(s: &str) -> Result<Self> {
+impl std::str::FromStr for EventType {
+    type Err = crate::error::Error;
+
+    fn from_str(s: &str) -> Result<Self> {
         match s {
             "push" => Ok(EventType::Push),
             "pull_request" => Ok(EventType::PullRequest),
@@ -145,7 +147,9 @@ fn parse_repository(event_json: &serde_json::Value, config: &Config) -> Result<R
         // Fallback for schedule events where repository may be undefined
         let full_name = config.repository.clone();
         let owner = config.repository_owner.clone();
-        let name = full_name.trim_start_matches(&format!("{}/", owner)).to_string();
+        let name = full_name
+            .trim_start_matches(&format!("{}/", owner))
+            .to_string();
         let html_url = format!("https://github.com/{}", full_name);
 
         Ok(Repository {
@@ -172,17 +176,17 @@ async fn parse_push_event(
         return Err(EventError::NoCommits.into());
     }
 
-    let commits: Vec<Commit> = commits_array
-        .iter()
-        .filter_map(|c| parse_commit(c))
-        .collect();
+    let commits: Vec<Commit> = commits_array.iter().filter_map(parse_commit).collect();
 
     if commits.is_empty() {
         return Err(EventError::NoCommits.into());
     }
 
     // Determine base and head refs
-    let base_ref = config.base_ref.clone().unwrap_or_else(|| commits[0].sha.clone());
+    let base_ref = config
+        .base_ref
+        .clone()
+        .unwrap_or_else(|| commits[0].sha.clone());
     let head_ref = commits.last().unwrap().sha.clone();
 
     Ok(EventContext {
@@ -345,7 +349,10 @@ mod tests {
             EventType::from_str("workflow_dispatch").unwrap(),
             EventType::WorkflowDispatch
         );
-        assert_eq!(EventType::from_str("schedule").unwrap(), EventType::Schedule);
+        assert_eq!(
+            EventType::from_str("schedule").unwrap(),
+            EventType::Schedule
+        );
         assert!(EventType::from_str("invalid").is_err());
     }
 

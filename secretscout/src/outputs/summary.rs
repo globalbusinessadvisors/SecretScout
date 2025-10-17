@@ -41,10 +41,7 @@ pub fn generate_findings_summary(repository: &Repository, findings: &[DetectedSe
         let short_sha = finding.short_sha();
 
         summary.push_str("<tr>\n");
-        summary.push_str(&format!(
-            "  <td>{}</td>\n",
-            escape_html(&finding.rule_id)
-        ));
+        summary.push_str(&format!("  <td>{}</td>\n", escape_html(&finding.rule_id)));
         summary.push_str(&format!(
             "  <td><a href=\"{}\">{}</a></td>\n",
             commit_url, short_sha

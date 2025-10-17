@@ -33,7 +33,9 @@ pub fn parse_sarif_str(contents: &str) -> Result<SarifReport> {
 
     // Validate structure
     if report.runs.is_empty() {
-        return Err(SarifError::InvalidStructure("No runs found in SARIF report".to_string()).into());
+        return Err(
+            SarifError::InvalidStructure("No runs found in SARIF report".to_string()).into(),
+        );
     }
 
     Ok(report)
@@ -171,7 +173,10 @@ mod tests {
         assert_eq!(findings[0].line_number, 42);
         assert_eq!(findings[0].commit_sha, "abc123def456");
         assert_eq!(findings[0].author, "John Doe");
-        assert_eq!(findings[0].fingerprint, "abc123def456:src/config.rs:aws-access-token:42");
+        assert_eq!(
+            findings[0].fingerprint,
+            "abc123def456:src/config.rs:aws-access-token:42"
+        );
     }
 
     #[test]

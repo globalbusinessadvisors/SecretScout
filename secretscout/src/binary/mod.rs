@@ -88,7 +88,12 @@ impl Architecture {
 /// Build download URL for gitleaks binary
 pub fn build_download_url(version: &str, platform: Platform, arch: Architecture) -> String {
     let base_url = "https://github.com/zricethezav/gitleaks/releases/download";
-    let filename = format!("gitleaks_{}_{}_{}",  version, platform.as_str(), arch.as_str());
+    let filename = format!(
+        "gitleaks_{}_{}_{}",
+        version,
+        platform.as_str(),
+        arch.as_str()
+    );
     let ext = platform.archive_ext();
 
     format!("{}/v{}/{}{}", base_url, version, filename, ext)
@@ -112,7 +117,12 @@ pub fn get_cache_dir() -> Result<PathBuf> {
 
 /// Get cache key for a specific gitleaks version
 pub fn get_cache_key(version: &str, platform: Platform, arch: Architecture) -> String {
-    format!("gitleaks-{}-{}-{}", version, platform.as_str(), arch.as_str())
+    format!(
+        "gitleaks-{}-{}-{}",
+        version,
+        platform.as_str(),
+        arch.as_str()
+    )
 }
 
 /// Check if binary exists in cache
@@ -218,11 +228,9 @@ pub async fn download_binary(
         .map_err(|e| BinaryError::DownloadFailed(format!("HTTP request failed: {}", e)))?;
 
     if !response.status().is_success() {
-        return Err(BinaryError::DownloadFailed(format!(
-            "HTTP status {}",
-            response.status()
-        ))
-        .into());
+        return Err(
+            BinaryError::DownloadFailed(format!("HTTP status {}", response.status())).into(),
+        );
     }
 
     let bytes = response
@@ -236,12 +244,14 @@ pub async fn download_binary(
     let extract_dir = cache_dir.join(&cache_key);
 
     if extract_dir.exists() {
-        std::fs::remove_dir_all(&extract_dir)
-            .map_err(|e| BinaryError::ExtractionFailed(format!("Failed to remove old cache: {}", e)))?;
+        std::fs::remove_dir_all(&extract_dir).map_err(|e| {
+            BinaryError::ExtractionFailed(format!("Failed to remove old cache: {}", e))
+        })?;
     }
 
-    std::fs::create_dir_all(&extract_dir)
-        .map_err(|e| BinaryError::ExtractionFailed(format!("Failed to create extract dir: {}", e)))?;
+    std::fs::create_dir_all(&extract_dir).map_err(|e| {
+        BinaryError::ExtractionFailed(format!("Failed to create extract dir: {}", e))
+    })?;
 
     if platform == Platform::Windows {
         extract_zip(&bytes, &extract_dir)?;
@@ -306,26 +316,30 @@ fn extract_zip(bytes: &[u8], dest: &Path) -> Result<()> {
         .map_err(|e| BinaryError::ExtractionFailed(format!("Failed to open zip: {}", e)))?;
 
     for i in 0..archive.len() {
-        let mut file = archive
-            .by_index(i)
-            .map_err(|e| BinaryError::ExtractionFailed(format!("Failed to read zip entry: {}", e)))?;
+        let mut file = archive.by_index(i).map_err(|e| {
+            BinaryError::ExtractionFailed(format!("Failed to read zip entry: {}", e))
+        })?;
 
         let outpath = dest.join(file.name());
 
         if file.is_dir() {
-            std::fs::create_dir_all(&outpath)
-                .map_err(|e| BinaryError::ExtractionFailed(format!("Failed to create dir: {}", e)))?;
+            std::fs::create_dir_all(&outpath).map_err(|e| {
+                BinaryError::ExtractionFailed(format!("Failed to create dir: {}", e))
+            })?;
         } else {
             if let Some(parent) = outpath.parent() {
-                std::fs::create_dir_all(parent)
-                    .map_err(|e| BinaryError::ExtractionFailed(format!("Failed to create parent dir: {}", e)))?;
+                std::fs::create_dir_all(parent).map_err(|e| {
+                    BinaryError::ExtractionFailed(format!("Failed to create parent dir: {}", e))
+                })?;
             }
 
-            let mut outfile = std::fs::File::create(&outpath)
-                .map_err(|e| BinaryError::ExtractionFailed(format!("Failed to create file: {}", e)))?;
+            let mut outfile = std::fs::File::create(&outpath).map_err(|e| {
+                BinaryError::ExtractionFailed(format!("Failed to create file: {}", e))
+            })?;
 
-            std::io::copy(&mut file, &mut outfile)
-                .map_err(|e| BinaryError::ExtractionFailed(format!("Failed to write file: {}", e)))?;
+            std::io::copy(&mut file, &mut outfile).map_err(|e| {
+                BinaryError::ExtractionFailed(format!("Failed to write file: {}", e))
+            })?;
         }
     }
 
@@ -375,8 +389,16 @@ pub fn build_arguments(config: &Config, log_opts: &str) -> Vec<String> {
 
 /// Execute gitleaks binary
 #[cfg(feature = "native")]
-pub async fn execute_gitleaks(binary_path: &Path, args: &[String], workspace: &Path) -> Result<ExecutionResult> {
-    log::info!("Executing gitleaks: {} {}", binary_path.display(), args.join(" "));
+pub async fn execute_gitleaks(
+    binary_path: &Path,
+    args: &[String],
+    workspace: &Path,
+) -> Result<ExecutionResult> {
+    log::info!(
+        "Executing gitleaks: {} {}",
+        binary_path.display(),
+        args.join(" ")
+    );
 
     let output = Command::new(binary_path)
         .args(args)

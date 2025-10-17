@@ -2,9 +2,9 @@
 //!
 //! This module provides JavaScript-compatible bindings for the WASM target.
 
+use crate::{config, outputs, sarif};
+use serde::Deserialize;
 use wasm_bindgen::prelude::*;
-use crate::{config, error, sarif, outputs};
-use serde::{Deserialize, Serialize};
 
 /// Initialize panic hook for better error messages
 #[wasm_bindgen(start)]
@@ -15,24 +15,22 @@ pub fn init() {
 /// Parse SARIF from JSON string
 #[wasm_bindgen]
 pub fn parse_sarif(sarif_json: &str) -> Result<JsValue, JsValue> {
-    let report = sarif::parse_sarif_str(sarif_json)
-        .map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let report =
+        sarif::parse_sarif_str(sarif_json).map_err(|e| JsValue::from_str(&e.to_string()))?;
 
-    serde_wasm_bindgen::to_value(&report)
-        .map_err(|e| JsValue::from_str(&e.to_string()))
+    serde_wasm_bindgen::to_value(&report).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
 /// Extract findings from SARIF JSON string
 #[wasm_bindgen]
 pub fn extract_findings(sarif_json: &str) -> Result<JsValue, JsValue> {
-    let report = sarif::parse_sarif_str(sarif_json)
-        .map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let report =
+        sarif::parse_sarif_str(sarif_json).map_err(|e| JsValue::from_str(&e.to_string()))?;
 
-    let findings = sarif::extract_findings(&report)
-        .map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let findings =
+        sarif::extract_findings(&report).map_err(|e| JsValue::from_str(&e.to_string()))?;
 
-    serde_wasm_bindgen::to_value(&findings)
-        .map_err(|e| JsValue::from_str(&e.to_string()))
+    serde_wasm_bindgen::to_value(&findings).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
 /// Generate success summary
@@ -49,7 +47,10 @@ pub fn generate_error_summary(exit_code: i32) -> String {
 
 /// Generate findings summary from findings JSON array
 #[wasm_bindgen]
-pub fn generate_findings_summary(repository_json: &str, findings_json: &str) -> Result<String, JsValue> {
+pub fn generate_findings_summary(
+    repository_json: &str,
+    findings_json: &str,
+) -> Result<String, JsValue> {
     #[derive(Deserialize)]
     struct Repo {
         owner: String,
@@ -58,8 +59,8 @@ pub fn generate_findings_summary(repository_json: &str, findings_json: &str) -> 
         html_url: String,
     }
 
-    let repo: Repo = serde_json::from_str(repository_json)
-        .map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let repo: Repo =
+        serde_json::from_str(repository_json).map_err(|e| JsValue::from_str(&e.to_string()))?;
 
     let repository = crate::events::Repository {
         owner: repo.owner,
@@ -68,8 +69,8 @@ pub fn generate_findings_summary(repository_json: &str, findings_json: &str) -> 
         html_url: repo.html_url,
     };
 
-    let findings: Vec<sarif::types::DetectedSecret> = serde_json::from_str(findings_json)
-        .map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let findings: Vec<sarif::types::DetectedSecret> =
+        serde_json::from_str(findings_json).map_err(|e| JsValue::from_str(&e.to_string()))?;
 
     Ok(outputs::generate_findings_summary(&repository, &findings))
 }
@@ -105,18 +106,14 @@ pub fn is_duplicate_comment(
         .map_err(|e| JsValue::from_str(&e.to_string()))?;
 
     Ok(crate::github::is_duplicate_comment(
-        &comments,
-        new_body,
-        new_path,
-        new_line,
+        &comments, new_body, new_path, new_line,
     ))
 }
 
 /// Validate git reference
 #[wasm_bindgen]
 pub fn validate_git_ref(git_ref: &str) -> Result<(), JsValue> {
-    config::Config::validate_git_ref(git_ref)
-        .map_err(|e| JsValue::from_str(&e.to_string()))
+    config::Config::validate_git_ref(git_ref).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
 /// Generate fingerprint
@@ -133,23 +130,37 @@ pub fn generate_fingerprint(
 /// Build gitleaks download URL
 #[wasm_bindgen]
 pub fn build_download_url(version: &str, platform: &str, arch: &str) -> Result<String, JsValue> {
-    use crate::binary::{Platform, Architecture};
+    use crate::binary::{Architecture, Platform};
 
     let plat = match platform {
         "linux" => Platform::Linux,
         "darwin" => Platform::Darwin,
         "windows" => Platform::Windows,
-        _ => return Err(JsValue::from_str(&format!("Unsupported platform: {}", platform))),
+        _ => {
+            return Err(JsValue::from_str(&format!(
+                "Unsupported platform: {}",
+                platform
+            )))
+        }
     };
 
     let architecture = match arch {
         "x64" => Architecture::X64,
         "arm64" => Architecture::Arm64,
         "arm" => Architecture::Arm,
-        _ => return Err(JsValue::from_str(&format!("Unsupported architecture: {}", arch))),
+        _ => {
+            return Err(JsValue::from_str(&format!(
+                "Unsupported architecture: {}",
+                arch
+            )))
+        }
     };
 
-    Ok(crate::binary::build_download_url(version, plat, architecture))
+    Ok(crate::binary::build_download_url(
+        version,
+        plat,
+        architecture,
+    ))
 }
 
 #[cfg(test)]
@@ -169,7 +180,7 @@ mod tests {
     }
 
     #[test]
-    #[cfg(target_arch = "wasm32")]  // Only run this test on WASM target
+    #[cfg(target_arch = "wasm32")] // Only run this test on WASM target
     fn test_validate_git_ref() {
         assert!(validate_git_ref("main").is_ok());
         assert!(validate_git_ref("abc123").is_ok());

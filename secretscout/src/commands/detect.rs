@@ -3,6 +3,7 @@
 use crate::{binary, error::Result};
 use std::path::Path;
 
+#[allow(clippy::too_many_arguments)]
 pub async fn detect(
     source: &Path,
     report_path: &Path,

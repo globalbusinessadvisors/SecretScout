@@ -232,8 +232,14 @@ impl Error {
         let message = self.to_string();
         // Replace any potential tokens or secrets with ***
         message
-            .replace(|c: char| c.is_ascii_alphanumeric() && message.contains("token"), "***")
-            .replace(|c: char| c.is_ascii_alphanumeric() && message.contains("key"), "***")
+            .replace(
+                |c: char| c.is_ascii_alphanumeric() && message.contains("token"),
+                "***",
+            )
+            .replace(
+                |c: char| c.is_ascii_alphanumeric() && message.contains("key"),
+                "***",
+            )
     }
 }
 

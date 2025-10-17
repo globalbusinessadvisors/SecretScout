@@ -187,10 +187,26 @@ impl From<&Result> for Option<DetectedSecret> {
 
         // Extract partial fingerprints (commit metadata)
         let fingerprints = result.partial_fingerprints.as_ref()?;
-        let commit_sha = fingerprints.commit_sha.as_deref().unwrap_or("unknown").to_string();
-        let author = fingerprints.author.as_deref().unwrap_or("unknown").to_string();
-        let email = fingerprints.email.as_deref().unwrap_or("unknown").to_string();
-        let date = fingerprints.date.as_deref().unwrap_or("unknown").to_string();
+        let commit_sha = fingerprints
+            .commit_sha
+            .as_deref()
+            .unwrap_or("unknown")
+            .to_string();
+        let author = fingerprints
+            .author
+            .as_deref()
+            .unwrap_or("unknown")
+            .to_string();
+        let email = fingerprints
+            .email
+            .as_deref()
+            .unwrap_or("unknown")
+            .to_string();
+        let date = fingerprints
+            .date
+            .as_deref()
+            .unwrap_or("unknown")
+            .to_string();
 
         // Generate fingerprint
         let fingerprint = DetectedSecret::generate_fingerprint(
@@ -219,12 +235,8 @@ mod tests {
 
     #[test]
     fn test_generate_fingerprint() {
-        let fp = DetectedSecret::generate_fingerprint(
-            "abc123",
-            "src/main.rs",
-            "aws-access-token",
-            42,
-        );
+        let fp =
+            DetectedSecret::generate_fingerprint("abc123", "src/main.rs", "aws-access-token", 42);
         assert_eq!(fp, "abc123:src/main.rs:aws-access-token:42");
     }
 

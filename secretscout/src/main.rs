@@ -4,7 +4,7 @@
 //! 1. CLI mode: General-purpose secret scanner like gitleaks
 //! 2. GitHub Actions mode: Automated scanning in CI/CD
 
-use secretscout::{cli, config, error};
+use secretscout::{config, error};
 use std::{env, process};
 
 #[tokio::main]
@@ -61,8 +61,7 @@ async fn run_cli_mode() -> error::Result<i32> {
     // Set log level based on verbose flag
     if cli.verbose {
         env::set_var("RUST_LOG", "debug");
-        env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug"))
-            .init();
+        env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug")).init();
     }
 
     match cli.command {
@@ -96,8 +95,7 @@ async fn run_cli_mode() -> error::Result<i32> {
             verbose,
         } => {
             // Run gitleaks protect
-            secretscout::commands::protect(&source, staged, cli.config.as_deref(), verbose)
-                .await?;
+            secretscout::commands::protect(&source, staged, cli.config.as_deref(), verbose).await?;
             Ok(0)
         }
 

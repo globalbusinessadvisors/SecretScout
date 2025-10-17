@@ -207,10 +207,7 @@ pub async fn fetch_account_info(config: &Config, username: &str) -> Result<Accou
         _ => AccountType::User,
     };
 
-    let login = user["login"]
-        .as_str()
-        .unwrap_or(username)
-        .to_string();
+    let login = user["login"].as_str().unwrap_or(username).to_string();
 
     Ok(AccountInfo {
         account_type,
@@ -338,9 +335,29 @@ mod tests {
             "line": 42
         })];
 
-        assert!(is_duplicate_comment(&existing, "test body", "src/main.rs", 42));
-        assert!(!is_duplicate_comment(&existing, "different body", "src/main.rs", 42));
-        assert!(!is_duplicate_comment(&existing, "test body", "src/other.rs", 42));
-        assert!(!is_duplicate_comment(&existing, "test body", "src/main.rs", 43));
+        assert!(is_duplicate_comment(
+            &existing,
+            "test body",
+            "src/main.rs",
+            42
+        ));
+        assert!(!is_duplicate_comment(
+            &existing,
+            "different body",
+            "src/main.rs",
+            42
+        ));
+        assert!(!is_duplicate_comment(
+            &existing,
+            "test body",
+            "src/other.rs",
+            42
+        ));
+        assert!(!is_duplicate_comment(
+            &existing,
+            "test body",
+            "src/main.rs",
+            43
+        ));
     }
 }
