@@ -1,6 +1,6 @@
 {
   "name": "secretscout",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Rust-powered secret detection for GitHub Actions",
   "main": "dist/index.js",
   "scripts": {
@@ -11,17 +11,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gitleaks/gitleaks-action.git"
+    "url": "https://github.com/globalbusinessadvisors/SecretScout.git"
+  },
+  "homepage": "https://github.com/globalbusinessadvisors/SecretScout#readme",
+  "bugs": {
+    "url": "https://github.com/globalbusinessadvisors/SecretScout/issues"
   },
   "keywords": [
-    "gitleaks",
+    "secretscout",
     "secrets",
     "security",
     "github-actions",
     "rust",
-    "secret-scanning"
+    "secret-scanning",
+    "secret-detection"
   ],
-  "author": "Gitleaks Contributors",
+  "author": "Global Business Advisors",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.10.1"

@@ -13,6 +13,18 @@ A blazingly fast, memory-safe CLI tool for detecting secrets, passwords, API key
 
 ### Installation
 
+#### Install via npm (Recommended)
+
+```bash
+# Install globally
+npm install -g secretscout
+
+# Now use from anywhere
+secretscout detect
+```
+
+#### Install from Source
+
 ```bash
 # Clone the repository
 git clone https://github.com/globalbusinessadvisors/SecretScout.git
@@ -27,16 +39,16 @@ cargo build --release
 ### Basic Usage
 
 ```bash
-# Scan current repository for secrets
+# If installed via npm:
+secretscout detect
+secretscout detect --source /path/to/repo
+secretscout protect --staged
+secretscout version
+
+# If built from source:
 ./target/release/secretscout detect
-
-# Scan specific repository
 ./target/release/secretscout detect --source /path/to/repo
-
-# Scan staged changes (perfect for pre-commit hooks)
 ./target/release/secretscout protect --staged
-
-# Show version
 ./target/release/secretscout version
 ```
 
@@ -61,6 +73,7 @@ cargo build --release
 - **Pre-commit Hooks** - Protect staged changes before commit
 - **Multiple Formats** - SARIF, JSON, CSV, text output
 - **Zero Config** - Works out of the box with sensible defaults
+- **Easy Install** - Available on npm for quick setup
 
 ## CLI Commands
 
@@ -287,6 +300,14 @@ cargo fmt --all
 ```
 
 ### Install Globally
+
+#### Via npm (Easiest)
+
+```bash
+npm install -g secretscout
+```
+
+#### Via Cargo
 
 ```bash
 # Install from local source
