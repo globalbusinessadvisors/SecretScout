@@ -161,18 +161,6 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Download all npm platform artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: npm-artifacts
-
-      - name: Copy binaries to platform packages
-        run: |
-          cp -r npm-artifacts/npm-linux-x64/* npm/linux-x64/
-          cp -r npm-artifacts/npm-darwin-x64/* npm/darwin-x64/
-          cp -r npm-artifacts/npm-darwin-arm64/* npm/darwin-arm64/
-          cp -r npm-artifacts/npm-win32-x64/* npm/win32-x64/
-
       - name: Verify NPM token exists
         run: |
           if [ -z "${{ secrets.NPM_TOKEN }}" ]; then
@@ -180,20 +168,10 @@ jobs:
             echo "Please add NPM_TOKEN to GitHub repository secrets"
             exit 1
           else
-            echo "NPM_TOKEN is set (length: ${#NODE_AUTH_TOKEN})"
+            echo "NPM_TOKEN is set"
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish platform packages
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          # Publish each platform package
-          cd npm/linux-x64 && npm publish --access public && cd ../..
-          cd npm/darwin-x64 && npm publish --access public && cd ../..
-          cd npm/darwin-arm64 && npm publish --access public && cd ../..
-          cd npm/win32-x64 && npm publish --access public && cd ../..
 
       - name: Publish main package
         env:

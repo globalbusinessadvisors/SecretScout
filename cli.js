@@ -2,59 +2,33 @@
 
 const { spawn } = require('child_process');
 const { join } = require('path');
-const { platform, arch } = process;
-
-/**
- * Map Node.js platform/arch to npm package names
- * These correspond to the platform-specific optional dependency packages
- */
-function getPlatformPackageName() {
-  const platformMap = {
-    'linux-x64': 'secretscout-linux-x64',
-    'darwin-x64': 'secretscout-darwin-x64',
-    'darwin-arm64': 'secretscout-darwin-arm64',
-    'win32-x64': 'secretscout-win32-x64',
-  };
-
-  const key = `${platform}-${arch}`;
-  return platformMap[key];
-}
+const { platform } = process;
+const fs = require('fs');
 
 /**
  * Find the platform-specific binary
- * Tries to locate the binary from the optional dependency package
+ * The binary is downloaded during postinstall into the bin/ directory
  */
 function findBinary() {
-  const packageName = getPlatformPackageName();
-
-  if (!packageName) {
-    console.error(`Error: Unsupported platform ${platform}-${arch}`);
-    console.error('SecretScout currently supports:');
-    console.error('  - Linux x64');
-    console.error('  - macOS x64 (Intel)');
-    console.error('  - macOS ARM64 (Apple Silicon)');
-    console.error('  - Windows x64');
-    console.error('\nPlease build from source: https://github.com/globalbusinessadvisors/SecretScout');
-    process.exit(1);
-  }
-
   // Binary name differs on Windows
   const binaryName = platform === 'win32' ? 'secretscout.exe' : 'secretscout';
 
-  try {
-    // Try to resolve the platform-specific package
-    const binaryPath = require.resolve(`${packageName}/${binaryName}`);
-    return binaryPath;
-  } catch (err) {
-    console.error(`Error: Failed to find SecretScout binary for ${platform}-${arch}`);
-    console.error(`\nExpected package: ${packageName}`);
-    console.error('\nTry running:');
-    console.error('  npm install --force');
+  // Look for binary in bin/ directory
+  const binaryPath = join(__dirname, 'bin', binaryName);
+
+  if (!fs.existsSync(binaryPath)) {
+    console.error(`Error: SecretScout binary not found at ${binaryPath}`);
+    console.error('\nThe binary should have been downloaded during installation.');
+    console.error('Try reinstalling:');
+    console.error('  npm install --force secretscout');
     console.error('\nOr install from source:');
     console.error('  cargo install secretscout');
-    console.error('\nOriginal error:', err.message);
+    console.error('\nOr download manually from:');
+    console.error('  https://github.com/globalbusinessadvisors/SecretScout/releases/latest');
     process.exit(1);
   }
+
+  return binaryPath;
 }
 
 /**

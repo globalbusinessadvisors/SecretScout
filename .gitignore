@@ -47,3 +47,6 @@ npm/linux-x64/secretscout
 npm/darwin-x64/secretscout
 npm/darwin-arm64/secretscout
 npm/win32-x64/secretscout.exe
+
+# Downloaded binaries from postinstall
+bin/
