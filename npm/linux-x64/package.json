@@ -1,5 +1,5 @@
 {
-  "name": "@secretscout/linux-x64",
+  "name": "secretscout-linux-x64",
   "version": "3.1.0",
   "description": "SecretScout binary for Linux x64",
   "os": [

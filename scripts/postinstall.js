@@ -19,10 +19,10 @@ const { platform, arch } = process;
  */
 function checkPlatformPackage() {
   const platformMap = {
-    'linux-x64': '@secretscout/linux-x64',
-    'darwin-x64': '@secretscout/darwin-x64',
-    'darwin-arm64': '@secretscout/darwin-arm64',
-    'win32-x64': '@secretscout/win32-x64',
+    'linux-x64': 'secretscout-linux-x64',
+    'darwin-x64': 'secretscout-darwin-x64',
+    'darwin-arm64': 'secretscout-darwin-arm64',
+    'win32-x64': 'secretscout-win32-x64',
   };
 
   const key = `${platform}-${arch}`;
