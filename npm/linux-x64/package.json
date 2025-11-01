@@ -1,0 +1,27 @@
+{
+  "name": "@secretscout/linux-x64",
+  "version": "3.1.0",
+  "description": "SecretScout binary for Linux x64",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/globalbusinessadvisors/SecretScout.git"
+  },
+  "files": [
+    "secretscout",
+    "index.js"
+  ],
+  "author": "Global Business Advisors",
+  "keywords": [
+    "secretscout",
+    "linux",
+    "binary"
+  ]
+}

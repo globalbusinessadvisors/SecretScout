@@ -6,8 +6,16 @@ authors.workspace = true
 license.workspace = true
 repository.workspace = true
 homepage.workspace = true
-description = "Rust/WASM port of gitleaks-action for GitHub Actions"
+description = "Blazingly fast Rust CLI for detecting secrets, passwords, API keys, and tokens in git repositories"
 readme = "../README.md"
+keywords = ["security", "secrets", "git", "cli", "scanner"]
+categories = ["command-line-utilities", "development-tools"]
+exclude = [
+    "tests/fixtures/*",
+    ".github/*",
+    "*.log",
+    "target/*"
+]
 
 [[bin]]
 name = "secretscout"
@@ -74,6 +82,3 @@ env_logger.workspace = true
 
 [dev-dependencies]
 tempfile = "3.8"
-
-[profile.release]
-# Inherit from workspace

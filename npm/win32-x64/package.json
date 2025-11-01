@@ -1,0 +1,27 @@
+{
+  "name": "@secretscout/win32-x64",
+  "version": "3.1.0",
+  "description": "SecretScout binary for Windows x64",
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/globalbusinessadvisors/SecretScout.git"
+  },
+  "files": [
+    "secretscout.exe",
+    "index.js"
+  ],
+  "author": "Global Business Advisors",
+  "keywords": [
+    "secretscout",
+    "windows",
+    "binary"
+  ]
+}

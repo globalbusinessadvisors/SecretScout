@@ -1,6 +1,8 @@
 # SecretScout
 
 [![CI](https://github.com/globalbusinessadvisors/SecretScout/workflows/CI/badge.svg)](https://github.com/globalbusinessadvisors/SecretScout/actions)
+[![npm version](https://img.shields.io/npm/v/secretscout.svg)](https://www.npmjs.com/package/secretscout)
+[![crates.io](https://img.shields.io/crates/v/secretscout.svg)](https://crates.io/crates/secretscout)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-3.1.0-green.svg)](CHANGELOG.md)
 [![Rust](https://img.shields.io/badge/rust-1.90+-orange.svg)](https://www.rust-lang.org)
@@ -13,17 +15,29 @@ A blazingly fast, memory-safe CLI tool for detecting secrets, passwords, API key
 
 ### Installation
 
-#### Install via npm (Recommended)
+#### Via npm (Recommended for most users)
 
 ```bash
 # Install globally
 npm install -g secretscout
 
-# Now use from anywhere
-secretscout detect
+# Verify installation
+secretscout --version
 ```
 
-#### Install from Source
+The npm package automatically downloads the correct binary for your platform (Linux, macOS Intel, macOS ARM, Windows).
+
+#### Via cargo (For Rust developers)
+
+```bash
+# Install from crates.io
+cargo install secretscout
+
+# Verify installation
+secretscout --version
+```
+
+#### From Source
 
 ```bash
 # Clone the repository
@@ -34,6 +48,7 @@ cd SecretScout
 cargo build --release
 
 # The binary will be at: target/release/secretscout
+./target/release/secretscout --version
 ```
 
 ### Basic Usage
@@ -301,19 +316,35 @@ cargo fmt --all
 
 ### Install Globally
 
+Choose one of the following methods:
+
 #### Via npm (Easiest)
 
 ```bash
+# Install from npm registry
 npm install -g secretscout
+
+# Use from anywhere
+secretscout detect --source ~/projects/my-repo
 ```
 
-#### Via Cargo
+#### Via cargo (From crates.io)
 
 ```bash
-# Install from local source
+# Install from crates.io registry
+cargo install secretscout
+
+# Use from anywhere
+secretscout detect --source ~/projects/my-repo
+```
+
+#### From Local Source
+
+```bash
+# Install from local source directory
 cargo install --path secretscout
 
-# Now use from anywhere
+# Use from anywhere
 secretscout detect --source ~/projects/my-repo
 ```
 

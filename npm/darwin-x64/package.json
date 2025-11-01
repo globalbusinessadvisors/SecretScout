@@ -1,0 +1,28 @@
+{
+  "name": "@secretscout/darwin-x64",
+  "version": "3.1.0",
+  "description": "SecretScout binary for macOS x64 (Intel)",
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/globalbusinessadvisors/SecretScout.git"
+  },
+  "files": [
+    "secretscout",
+    "index.js"
+  ],
+  "author": "Global Business Advisors",
+  "keywords": [
+    "secretscout",
+    "macos",
+    "darwin",
+    "binary"
+  ]
+}
