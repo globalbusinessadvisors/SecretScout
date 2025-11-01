@@ -173,6 +173,18 @@ jobs:
           cp -r npm-artifacts/npm-darwin-arm64/* npm/darwin-arm64/
           cp -r npm-artifacts/npm-win32-x64/* npm/win32-x64/
 
+      - name: Verify NPM token exists
+        run: |
+          if [ -z "${{ secrets.NPM_TOKEN }}" ]; then
+            echo "ERROR: NPM_TOKEN secret is not set or is empty!"
+            echo "Please add NPM_TOKEN to GitHub repository secrets"
+            exit 1
+          else
+            echo "NPM_TOKEN is set (length: ${#NODE_AUTH_TOKEN})"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish platform packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
