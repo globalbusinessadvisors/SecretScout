@@ -99,10 +99,11 @@ jobs:
 
       - name: Prepare binary (Windows)
         if: matrix.os == 'windows-latest'
+        shell: pwsh
         run: |
-          cd target/${{ matrix.target }}/release
+          Set-Location target/${{ matrix.target }}/release
           7z a secretscout-${{ matrix.target }}.zip secretscout.exe
-          mv secretscout-${{ matrix.target }}.zip ${{ github.workspace }}/
+          Move-Item secretscout-${{ matrix.target }}.zip ${{ github.workspace }}/
 
       - name: Upload Release Asset (Unix)
         if: matrix.os != 'windows-latest'
@@ -134,9 +135,10 @@ jobs:
 
       - name: Copy binary to npm platform package (Windows)
         if: matrix.os == 'windows-latest'
+        shell: pwsh
         run: |
-          mkdir -p npm/${{ matrix.platform }}
-          cp target/${{ matrix.target }}/release/secretscout.exe npm/${{ matrix.platform }}/
+          New-Item -ItemType Directory -Force -Path npm/${{ matrix.platform }}
+          Copy-Item target/${{ matrix.target }}/release/secretscout.exe npm/${{ matrix.platform }}/
 
       - name: Upload npm platform artifact
         uses: actions/upload-artifact@v4
